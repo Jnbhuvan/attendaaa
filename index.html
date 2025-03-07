@@ -1,15 +1,139 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-   
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 30px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: #7f00ff;
+            padding: 15px 0;
+            display: flex;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            padding: 0;
+            margin: 0;
+        }
+
+        .navbar ul li {
+            margin-right: 20px;
+        }
+
+        .navbar ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .navbar ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+            padding:30px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #7f00ff;
+            outline: none;
+        }
+
+        button {
+            background-color: #7f00ff;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #6a00cc;
+        }
+
+        .error-message {
+            color: #ff4444;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message {
+            color: #00C851;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div class="navbar">
-        <ul>    
-            <li><a href="#">Attendance Wala</a></li>
+        <ul>
+            <li><a href="#">ATTENDANCE WALA</a></li>
         </ul>
     </div>
 
@@ -24,6 +148,33 @@
         </form>
     </div>
 
-   
+    <script>
+        function login(event) {
+            event.preventDefault(); // Prevent form from refreshing the page
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+
+            // Hide messages initially
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            // Simple validation for demonstration
+            if (username === 'admin@123' && password === 'password') {
+                // Show success message
+                successMessage.style.display = 'block';
+
+                // Redirect to dashboard after 1 second
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+            } else {
+                // Show error message
+                errorMessage.style.display = 'block';
+            }
+        }
+    </script>
 </body>
 </html>
