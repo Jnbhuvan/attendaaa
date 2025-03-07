@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f9;
+        }
+
+        .navbar {
+            width: 100%;
+            background-color: #7f00ff;
+            padding: 15px 0;
+            display: flex;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            padding: 0;
+            margin: 0;
+        }
+
+        .navbar ul li {
+            margin-right: 20px;
+        }
+
+        .navbar ul li a {
+            text-decoration:solid;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            margin-top: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filters select, .file-upload {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            flex: 1;
+        }
+
+        .student-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .attendance-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .attendance-buttons button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .attendance-buttons button.inactive {
+    background-color: #ccc; /* Grey color */
+    color: #666; /* Darker text for better visibility */
+    cursor: not-allowed; /* Indicate that the button is inactive */
+}
+
+
+        .attendance-buttons button.present {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .attendance-buttons button.present.active {
+            background-color: #45a049;
+            transform: scale(1.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .attendance-buttons button.absent {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .attendance-buttons button.absent.active {
+            background-color: #d32f2f;
+            transform: scale(1.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .attendance-buttons button.inactive {
+    background-color: #ccc; /* Grey */
+    color: #666; /* Darker text for better visibility */
+    cursor: not-allowed; /* Indicate that the button is inactive */
+}
+
+
+        .submit-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #7f00ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .absent-list {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #f8f8f8;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload label {
+            background-color: #7f00ff;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <ul>
+            <li><a href="#">ATTENDANCE WALLA</a></li>
+        </ul>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h2>Select Class and Subject</h2>
+            <div class="filters">
+                <select id="classSelect" onchange="handleClassChange()">
+                    <option value="">-- Select Class --</option>
+                    <option value="classA">Class A</option>
+                    <option value="classB">Class B</option>
+                    <option value="classC">Class C</option>
+                </select>
+
+                <select id="subjectSelect">
+                    <option value="">-- Select Subject --</option>
+                    <option value="IT">IT</option>
+                    <option value="SE">SE</option>
+                    <option value="ADA">ADA</option>
+                    <option value="ENGLISH">ENGLISH</option>
+                    <option value="OE">OE</option>
+                </select>
+
+                <div class="file-upload" id="csvUpload" style="display: none;">
+                    <input type="file" id="csvInput" accept=".csv" onchange="handleCSVUpload(event)">
+                    <label for="csvInput">Upload Student CSV</label>
+                </div>
+            </div>
+
+            <div class="student-list" id="studentsList"></div>
+
+            <button class="submit-btn" onclick="saveAttendance()">Submit Attendance</button>
+
+            <div class="absent-list" id="absentList">
+                <p>Absent Students:</p>
+                <textarea id="absentStudentsNames" readonly></textarea>
+                <button class="submit-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Predefined students for Class A
+        const studentsData = {
+            classA: [
+                "Abhishek N", "ADITHYA MAIYA B", "Akash V", "B NEHA", "B Shalini", 
+                "BHARATH D", "BHOOMIKA R", "BHUVAN J N", "Bindhu M", "Bindushree H K",
+                "CHAITHRA N M", "CHAITHRA R", "Chaithra T K", "CHANDANA C","Charan The Chirathe", "CHETHAN B",
+                "Chinmayi C Goudar", "Chirag B J","Chiranth HULIYA ROARRRRR!", "Darshan G", "Darshan K", "DARSHAN M",
+                "Deekshith D", "DEEPA R", "Deepika pawar S", "DHANALAKSHMI M R", "Disha S",
+                "Gagan Deep S", "Ganavi K", "ganavi s", "Gouthami", "HANAMANTA D",
+                "HARIPRIYA S P", "Harsha R", "Harshitha C", "Hema c", "ISHA P", "JEEVITHA G",
+                "Kiran P", "KISHAN B", "KISHORE H P", "Kishore G", "Kushal Gowda P",
+                "Lekhana T", "LIKITHA K", "Likitha R", "M Arpitha", "M P Poorvith",
+                "Madan R", "Manoj P", "Harini A"
+            ],
+            classB: [],
+            classC: []
+        };
+
+        let selectedClass = '';
+        const attendanceRecords = {};
+
+        function handleClassChange() {
+            selectedClass = document.getElementById("classSelect").value;
+            const csvUpload = document.getElementById("csvUpload");//holds the csv file div
+            csvUpload.style.display = ['classB', 'classC'].includes(selectedClass) ? 'block' : 'none';
+            showStudents();
+        }
+
+        function handleCSVUpload(event) {
+            if (!selectedClass || selectedClass === 'classA') return;
+
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const csvData = e.target.result;
+                const students = csvData.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+                
+                studentsData[selectedClass] = students;
+                showStudents();
+                alert(`Successfully uploaded ${students.length} students!`);
+            };
+
+            reader.readAsText(file);
+        }
+
+        function showStudents() {
+            const studentsList = document.getElementById("studentsList");
+            studentsList.innerHTML = "";
+
+            if (selectedClass) {
+                const students = studentsData[selectedClass];
+
+                students.forEach(student => {
+                    const studentItem = document.createElement("div");
+                    studentItem.className = "student-item";
+
+                    const studentName = document.createElement("span");
+                    studentName.textContent = student;
+                    studentItem.appendChild(studentName);
+
+                    const attendanceButtons = document.createElement("div");
+                    attendanceButtons.className = "attendance-buttons";
+
+                    const presentButton = createButton('present', student);
+                    const absentButton = createButton('absent', student);
+
+                    attendanceButtons.appendChild(presentButton);
+                    attendanceButtons.appendChild(absentButton);
+                    studentItem.appendChild(attendanceButtons);
+
+                    studentsList.appendChild(studentItem);
+                });
+            }
+        }
+
+        function createButton(type, student) {
+            const button = document.createElement("button");
+            button.className = type;
+            button.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+            button.onclick = () => handleAttendance(type, student, button);
+            return button;
+        }
+
+        function handleAttendance(type, student, button) {
+    const parent = button.parentElement; // Get the parent div of the buttons
+    const siblingButton = Array.from(parent.children).find(child => child !== button); // Find the sibling button
+
+    // Remove active and inactive classes from both buttons
+    Array.from(parent.children).forEach(child => {
+        child.classList.remove('active', 'inactive');
+    });
+
+    // Add active class to the clicked button
+    button.classList.add('active');
+
+    // Add inactive class to the sibling button (change its color to grey)
+    siblingButton.classList.add('inactive');
+
+    // Update attendance record
+    attendanceRecords[student] = type;
+}
+
+        function saveAttendance() {
+            const selectedSubject = document.getElementById("subjectSelect").value;
+
+            if (!selectedClass || !selectedSubject) {
+                alert("Please select a class and a subject.");
+                return;
+            }
+
+            const students = studentsData[selectedClass];
+            const csvData = [];
+            const absentStudents = [];
+            const dateTime = new Date().toLocaleString();
+
+            csvData.push("Student Name,Attendance,Subject,Date Time");
+
+            students.forEach(student => {
+                const attendance = attendanceRecords[student] || "absent";
+                csvData.push(`${student},${attendance},${selectedSubject},${dateTime}`);
+
+                if (attendance === "absent") {
+                    absentStudents.push(student);
+                }
+            });
+
+            // Download CSV
+            const csvString = csvData.join("\n");
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `attendance_${selectedClass}_${selectedSubject}_${Date.now()}.csv`;
+            link.click();
+
+            // Show absent list
+            const absentTextArea = document.getElementById('absentStudentsNames');
+            absentTextArea.value = `Subject: ${selectedSubject}\nTime: ${dateTime}\n\nAbsent Students:\n${absentStudents.join("\n")}`;
+            document.getElementById('absentList').style.display = 'block';
+        }
+
+        function copyToClipboard() {
+            const absentTextArea = document.getElementById('absentStudentsNames');
+            absentTextArea.select();
+            document.execCommand('copy');
+            alert("Absent list copied to clipboard!");
+        }
+    </script>
+</body>
+</html>
